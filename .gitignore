@@ -2,8 +2,10 @@
 .venv/
 __pycache__/
 simple_sr.pth
-results/
-results_hybrid/
+results/*
+!results/*.png
+results_hybrid/*
+!results_hybrid/*.png
 prompt.txt
 *.log
 debug.py

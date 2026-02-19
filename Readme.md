@@ -57,8 +57,14 @@ We have established a baseline on synthetic lensing data (Arcs + Gaussian source
 | **Hybrid** | **0.6521** | Sharper edges, enforces physical consistency. |
 
 **Visual Comparison**:
-![Results Grid](results/epoch_5_viz.png)
-*(Note: Run training to generate this image locally)*
+
+### Baseline Supervised (Epoch 5)
+![Baseline Results](results/epoch_5_viz.png)
+
+### Physics-Informed Hybrid (Epoch 5)
+![Hybrid Results](results_hybrid/epoch_5_viz.png)
+
+*(Note: Run training to generate these images locally)*
 
 ---
 
