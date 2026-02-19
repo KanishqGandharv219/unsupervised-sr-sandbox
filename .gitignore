@@ -1,4 +1,12 @@
-.venv/ 
-data/ 
-__pycache__/ 
-simple_sr.pth 
+
+.venv/
+__pycache__/
+simple_sr.pth
+results/
+results_hybrid/
+prompt.txt
+*.log
+debug.py
+# Ignore large data downloads
+data/cifar-10-batches-py/
+data/*.tar.gz

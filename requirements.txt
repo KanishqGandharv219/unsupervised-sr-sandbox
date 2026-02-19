@@ -1,3 +1,6 @@
 torch
 torchvision
+numpy
 matplotlib
+tqdm
+scikit-image
