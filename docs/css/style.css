@@ -1,0 +1,525 @@
+:root {
+  /* Base colors - dark theme for astrophysics aesthetic */
+  --bg-primary: #0a0e1a;
+  /* Deep space blue-black */
+  --bg-secondary: #151b2e;
+  --bg-elevated: #1f2937;
+
+  /* Glassmorphism Variables */
+  --bg-primary-glass: rgba(10, 14, 26, 0.65);
+  --bg-secondary-glass: rgba(21, 27, 46, 0.65);
+  --bg-elevated-glass: rgba(31, 41, 55, 0.65);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(12px);
+
+  /* Text */
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+
+  /* Accent - subtle teal inspired by lensing color scales */
+  --accent-primary: #06b6d4;
+  /* Cyan */
+  --accent-secondary: #8b5cf6;
+  /* Purple */
+
+  /* Status colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom Minimal Scrollbar */
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-elevated) var(--bg-primary);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
+  max-width: 70ch;
+  /* Add auto-margins to ensure max-width paragraphs are centered inside centralized flex/block-containers */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+code {
+  font-family: 'Fira Code', 'Courier New', monospace;
+  background: var(--bg-elevated);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* Layout & Glass Helpers */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.glass-panel {
+  background: var(--bg-elevated-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+section {
+  padding: 4rem 0;
+  /* border-bottom: 1px solid var(--bg-elevated); REMOVED per user request */
+}
+
+/* Hero */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  /* Above canvas */
+  /* Remove solid radial background so 3D canvas shows through */
+  background: transparent;
+  padding: 2rem 1rem;
+}
+
+.hero .container {
+  background: var(--bg-primary-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: 4rem 3rem;
+  border-radius: 1.5rem;
+  border: var(--glass-border);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  max-width: 800px;
+  width: 100%;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  -webkit-background_clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tagline {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--bg-elevated);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-secondary);
+}
+
+/* Science Section Grid */
+.science-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+/* Viewer Container */
+.viewer-container {
+  display: grid;
+  grid-template-columns: 250px 1fr 300px;
+  gap: 2rem;
+  background: var(--bg-secondary-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-top: 2rem;
+  border: var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Sample Selector (Left) */
+.sample-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.sample-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: var(--bg-elevated-glass);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: var(--glass-border);
+}
+
+.sample-item:hover {
+  background: var(--bg-primary-glass);
+  transform: translateX(4px);
+}
+
+.sample-item.active {
+  border-color: var(--accent-primary);
+  background: var(--bg-primary-glass);
+}
+
+.sample-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: #000;
+}
+
+/* Main Display (Center) */
+.main-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.canvas-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 512px;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  background: #000;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.canvas-wrapper img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  /* Crucial for low-res comparison */
+}
+
+.method-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--bg-elevated-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: var(--glass-border);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.method-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.method-btn.active {
+  background: var(--bg-secondary-glass);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Info Panel (Right) */
+.info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.metrics-card {
+  background: var(--bg-elevated-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: var(--glass-border);
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.metric-val {
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.metric-val.improving {
+  color: var(--success);
+}
+
+.metric-val.baseline {
+  color: var(--text-secondary);
+}
+
+.description-card {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Comparison Grid */
+.grid-gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.grid-gallery>div {
+  /* Prevent grid items from blowing out the viewport due to table sizes (min-width: auto bug) */
+  min-width: 0;
+}
+
+.grid-gallery img {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: var(--glass-border);
+}
+
+/* Table */
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.results-table th,
+.results-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: var(--glass-border);
+}
+
+.results-table th {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Footer */
+footer {
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+footer a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .viewer-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .sample-list {
+    flex-direction: row;
+    overflow-x: auto;
+    max-height: none;
+    padding-bottom: 0.5rem;
+  }
+
+  .sample-item {
+    flex-direction: column;
+    text-align: center;
+    min-width: 80px;
+  }
+
+  .canvas-wrapper {
+    width: 100%;
+    max-width: 512px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .science-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .method-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .metrics-card .metric-row {
+    font-size: 1rem;
+  }
+
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 3rem 1rem;
+  }
+
+  .hero .container {
+    padding: 2rem 1.5rem;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+  }
+
+  .results-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+/* --- Interactive 3D Viewer Custom UI (lil-gui) --- */
+/* Custom lil-gui styling to match DeepLense theme */
+.lil-gui.root {
+  --background-color: var(--bg-elevated);
+  --text-color: var(--text-primary);
+  --title-background-color: var(--bg-secondary);
+  --widget-color: rgba(6, 182, 212, 0.1);
+  /* accent-primary dark */
+  --hover-color: rgba(6, 182, 212, 0.3);
+  --focus-color: var(--accent-primary);
+  --number-color: var(--accent-primary);
+  --string-color: var(--accent-secondary);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  /* Force position top right */
+  position: fixed !important;
+  top: 10px !important;
+  right: 10px !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+.lil-gui .title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding-top: 1.5px;
+  padding-bottom: 10px;
+}

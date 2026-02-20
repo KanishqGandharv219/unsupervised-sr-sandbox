@@ -12,3 +12,12 @@ debug.py
 # Ignore large data downloads
 data/cifar-10-batches-py/
 data/*.tar.gz
+
+# System/IDE
+.agent/
+__MACOSX/
+.DS_Store
+
+# Temporary JS files
+node_modules/
+package-lock.json
