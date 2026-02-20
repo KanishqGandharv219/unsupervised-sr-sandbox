@@ -2,6 +2,9 @@
 
 **Unsupervised Physics-Informed Super-Resolution for Gravitational Lensing**
 
+### 🌐 [Live Interactive Demo](https://kanishqgandharv219.github.io/unsupervised-sr-sandbox/)
+Explore the super-resolution reconstructions visually in your browser with the 3D astrophysics-themed viewer.
+
 ## Vision & Motivation
 Strong gravitational lensing provides a unique probe into dark matter substructure and the mass distribution of foreground lenses. However, observations from upcoming surveys like **LSST (Rubin Observatory)** and **Euclid** will be limited by resolution and point spread function (PSF) effects.
 
@@ -134,9 +137,15 @@ We have established a baseline on synthetic lensing data (Arcs + Gaussian source
 - `utils/physics.py`: Degradation model.
 - `run_baseline.py`: Entry point for baseline.
 - `run_hybrid.py`: Entry point for physics-informed training.
-- `results/report.md`: Detailed final report.
+- `run_hybrid.py`: Entry point for physics-informed training.
 
-## 5. Next Steps for GSoC
+## 5. Live Interactive Showcase (`docs/`)
+We developed a fully vanilla HTML/CSS/JS frontend hosted via GitHub Pages to visually evaluate models without firing up Jupyter.
+- **Glassmorphism UI**: Modern aesthetic inspired by ML dashboards.
+- **Real Earth Physics**: Features a Three.js interactive background with true Earth oblateness (1.0 : 0.9966) and authentic 23.5° axial tilt.
+- **Scientific Typography**: MathJax Integration for proper LaTeX $\mathcal{L}_{total}$ loss function rendering.
+
+## 6. Next Steps for GSoC
 - **Real Data**: Replace `SyntheticLensingDataset` with loaders for DeepLense simulations and then real HST/ground-based lensing images referenced on the project page.
 - **Unsupervised Learning**: Run the hybrid trainer with $L_{sup} = 0$ on real LR images, treating physics loss + regularization as the only supervision signal.
 - **Lensing Analysis**: Use SR outputs in at least one downstream task (e.g., substructure detection or ring sharpness metrics) to quantify scientific benefit.
