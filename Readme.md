@@ -1,8 +1,11 @@
-# DeepLense-SR: Unsupervised Super-Resolution Prep for ML4Sci GSoC 2026
+# DeepLense-SR: supervised + physics-informed super-resolution for strong lensing images
 
-> 🔬 Preparing for [ML4Sci DeepLense GSoC 2026: Unsupervised SR and Analysis of Real Lensing Images](https://ml4sci.org/gsoc/projects/2026/)
+> 🔬 Preparing for [ML4Sci DeepLense GSoC 2026 projects](https://ml4sci.org/gsoc/projects/2026/project_DEEPLENSE.html), 
+> especially the physics-guided ML and real-lensing-image analysis projects.
 
-**Unsupervised Physics-Informed Super-Resolution for Gravitational Lensing**
+In particular, this repo prepares for the "Physics Guided Machine Learning on Real Lensing Images" project by prototyping physics-informed neural components (consistency losses, lens-specific metrics) on DeepLense-style data.
+
+**physics-informed Super-Resolution and Lens Analysis for Strong Gravitational Lensing**
 
 ### 🌐 [Live Interactive Demo](https://kanishqgandharv219.github.io/unsupervised-sr-sandbox/)
 Explore the super-resolution reconstructions visually in your browser with the 3D astrophysics-themed viewer.
@@ -12,13 +15,13 @@ Strong gravitational lensing provides a unique probe into dark matter substructu
 
 Traditional Super-Resolution (SR) relies on High-Resolution (HR) ground truth, which **does not exist** for real astronomical observations. We only have Low-Resolution (LR) images from telescopes. Therefore, relying solely on supervised learning on simulations is insufficient due to the domain gap.
 
-This project implements an **Unsupervised, Physics-Informed** approach:
+This project implements a **Physics-Informed** approach:
 1.  **Physics Constraints**: Enforcing that the Super-Resolved image, when degraded by the known telescope PSF and downsampling, matches the observed LR image.
 2.  **Domain Adaptation**: Bridging the gap between simulations and real survey data.
 
 > "The goal is not just prettier images, but scientifically accurate recovery of lensing features (arcs, Einstein rings) to enable better mass modeling and substructure detection."
 
-This repository implements the core ingredients requested in the ML4Sci "Unsupervised Super-Resolution and Analysis of Real Lensing Images" project: physics-consistent SR without HR labels and lens-specific downstream metrics for scientific analysis.
+This repository implements core ingredients relevant to the DeepLense GSoC 2026 projects: physics-consistent SR without HR labels and lens-specific downstream metrics for scientific analysis. Short summaries of the project's recommended papers are collected in `notes/paper_summaries.md` (work in progress).
 
 ## Related Contributions
 *   **DeepLense BYOL**: [Link to PR](TODO: Insert Link) - Contribution to self-supervised learning for lens finding.
@@ -80,7 +83,7 @@ We have established a baseline on synthetic lensing data (Arcs + Gaussian source
 # Execution Log: Development Journey
 
 ## 1. Project Overview
-**Goal**: Transform a basic "sandbox" repository into a structured, ML4Sci-ready project for the "Unsupervised Super-Resolution and Analysis of Real Lensing Images" task.
+**Goal**: Transform a basic "sandbox" repository into a structured, ML4Sci-ready project for the DeepLense GSoC 2026 projects on physics-guided ML and analysis of real lensing images.
 **Key Objective**: Demonstrate engineering competence, domain knowledge (lensing physics), and research skills (baseline vs. physics-informed training).
 
 ## 2. Methodology & Implementation
@@ -113,7 +116,7 @@ We have established a baseline on synthetic lensing data (Arcs + Gaussian source
     - Metrics: PSNR, SSIM.
 
 ### Phase 3: Physics-Informed Hybrid SR
-- **Concept**: In real scenarios (DeepLense), we don't have HR ground truth. We must rely on `Consistency Loss`.
+- **Concept**: In real scenarios (DeepLense), we don't have HR ground truth. We must rely on `Consistency Loss`. This physics-consistency loss is related to the physics-informed encoding strategy used in LensPINN (Ojha et al., NeurIPS 2024) and HEAL-PINN (Srivastava et al., NeurIPS 2025), where the gravitational lensing equation $\vec{\theta}_S = \vec{\theta}_I - \vec{\alpha}(\vec{\theta}_I)$ is embedded directly into the model to reconstruct the source galaxy before classification.
 - **Implementation (`training/trainer.py`)**:
     - Added `PhysicsLoss`: `|| P(SR) - LR ||^2`.
     - The model predicts SR. We degrade it back to LR using `PhysicsDownsampler`. This "Recycled LR" must match the original Input LR.
@@ -168,7 +171,16 @@ Enhancing arc sharpness directly correlates to significantly lower uncertainty b
 - Einstein radius $\theta_E$ parametric measurements
 - Dark matter mass profile inversion (lenstronomy)
 
-## 5. Key Files Created
+## 5. Downstream: Dark Matter Substructure Classification
+
+Motivated by Paper 2 (Alexander et al., 2020) and Paper 3 (LensPINN, NeurIPS 2024), SR-enhanced images from this pipeline are intended to feed a downstream classifier distinguishing:
+- `no_sub`: No dark matter substructure
+- `vortex`: Axion dark matter (vortex substructure)
+- `subhalo`: CDM subhalo substructure
+
+**Planned**: Train a lightweight CNN classifier on SR-outputs vs raw Bicubic inputs and show that SR pre-processing improves classification ROC-AUC on DeepLense Model I data, directly mirroring the experimental setup of LensPINN and HEAL-PINN.
+
+## 6. Key Files Created
 - `data/lensing_dataset.py`: Synthetic generator.
 - `models/baseline.py`: SR Network.
 - `training/trainer.py`: Unified trainer.
@@ -176,13 +188,13 @@ Enhancing arc sharpness directly correlates to significantly lower uncertainty b
 - `run_baseline.py`: Entry point for baseline.
 - `run_hybrid.py`: Entry point for physics-informed training.
 
-## 6. Live Interactive Showcase (`docs/`)
+## 7. Live Interactive Showcase (`docs/`)
 We developed a fully vanilla HTML/CSS/JS frontend hosted via GitHub Pages to visually evaluate models without firing up Jupyter.
 - **Glassmorphism UI**: Modern aesthetic inspired by ML dashboards.
 - **Real Earth Physics**: Features a Three.js interactive background with true Earth oblateness (1.0 : 0.9966) and authentic 23.5° axial tilt.
 - **Scientific Typography**: Integrated MathJax for proper LaTeX $\mathcal{L}_{total}$ loss function rendering.
 
-## 7. Scientific Validation & DeepLense Alignment
+## 8. Scientific Validation & DeepLense Alignment
 
 This pipeline was systematically extended to fully align with the official ML4Sci specifications:
 
@@ -195,7 +207,8 @@ This pipeline was systematically extended to fully align with the official ML4Sc
 - **Ring Contrast Ratio**: Computes specific ring annulus segregation against atmospheric/Poisson backgrounds.
 - We quantified structural improvements across 200 validations using the **Wilcoxon Signed-Rank Test**.
 
-## 8. Next Steps for GSoC
-- **Real Data**: Replace `SyntheticLensingDataset` with loaders for DeepLense simulations and then real HST/ground-based lensing images referenced on the project page.
-- **Unsupervised Learning**: Run the hybrid trainer with $L_{sup} = 0$ on real LR images, treating physics loss + regularization as the only supervision signal.
-- **Lensing Analysis**: Use SR outputs in at least one downstream task (e.g., substructure detection or ring sharpness metrics) to quantify scientific benefit.
+## 9. Next Steps for GSoC
+- **(Planned) Dark Matter Classifier**: Train a CNN/ViT classifier (following Paper 2 and LensPINN/Paper 3) on SR-enhanced DeepLense images to distinguish `no_sub`, `vortex`, `subhalo` substructure types.
+- **(Planned) Physics-Informed Preprocessing**: Implement the LensPINN-style physics preprocessing term $\tanh(\nabla_x \, \nabla_y(\log(I_{\max}/I))^2)$ as an additional input channel, following Paper 3.
+- **(Planned) Real Data**: Extend pipeline to real HST-like lensing images as described in Paper 3 and Paper 4.
+- **(Planned) Unsupervised Substructure Detection**: Extend Paper 1's approach (unsupervised anomaly detection) to SR-preprocessed images, studying whether SR improves detection sensitivity.
