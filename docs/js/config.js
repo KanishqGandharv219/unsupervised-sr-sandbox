@@ -15,6 +15,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 15.013692184565695,
                     "ssim": 0.8901038418981323
+                },
+                "sr_unsupervised": {
+                    "psnr": 12.816689900186438,
+                    "ssim": 0.795106972015145
                 }
             }
         },
@@ -33,6 +37,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 15.824284416510341,
                     "ssim": 0.8548851595675477
+                },
+                "sr_unsupervised": {
+                    "psnr": 13.546432248634835,
+                    "ssim": 0.7621249579885414
                 }
             }
         },
@@ -51,6 +59,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 16.82239926447162,
                     "ssim": 0.9179017630612808
+                },
+                "sr_unsupervised": {
+                    "psnr": 13.265070397392662,
+                    "ssim": 0.8132923279183515
                 }
             }
         },
@@ -69,6 +81,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 13.218695834748404,
                     "ssim": 0.9401718038759957
+                },
+                "sr_unsupervised": {
+                    "psnr": 11.411014617706153,
+                    "ssim": 0.8488750408728043
                 }
             }
         },
@@ -87,6 +103,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 16.035970276141764,
                     "ssim": 0.922821817797798
+                },
+                "sr_unsupervised": {
+                    "psnr": 12.807068734753074,
+                    "ssim": 0.8354345658831697
                 }
             }
         },
@@ -105,6 +125,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 16.610676405869828,
                     "ssim": 0.8842845121476086
+                },
+                "sr_unsupervised": {
+                    "psnr": 13.34691918169591,
+                    "ssim": 0.7906379827855246
                 }
             }
         },
@@ -123,6 +147,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 16.460899248500745,
                     "ssim": 0.90703702986453
+                },
+                "sr_unsupervised": {
+                    "psnr": 12.930016346994455,
+                    "ssim": 0.8118717562181346
                 }
             }
         },
@@ -141,6 +169,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 16.236294287567276,
                     "ssim": 0.8881864010330897
+                },
+                "sr_unsupervised": {
+                    "psnr": 13.15209999562082,
+                    "ssim": 0.8000394920735453
                 }
             }
         },
@@ -159,6 +191,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 16.593655856788757,
                     "ssim": 0.9116572631029113
+                },
+                "sr_unsupervised": {
+                    "psnr": 13.102139419630955,
+                    "ssim": 0.8193788342222164
                 }
             }
         },
@@ -177,6 +213,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 16.416224786219438,
                     "ssim": 0.9002798843185343
+                },
+                "sr_unsupervised": {
+                    "psnr": 13.288963583093832,
+                    "ssim": 0.8016428095637406
                 }
             }
         },
@@ -195,6 +235,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 16.02232257779121,
                     "ssim": 0.9403135526690557
+                },
+                "sr_unsupervised": {
+                    "psnr": 12.722623506463558,
+                    "ssim": 0.8470886782759648
                 }
             }
         },
@@ -213,6 +257,10 @@ const demoConfig = {
                 "sr_hybrid": {
                     "psnr": 13.515474998686363,
                     "ssim": 0.9384740212584506
+                },
+                "sr_unsupervised": {
+                    "psnr": 11.51953408832151,
+                    "ssim": 0.8510130587278663
                 }
             }
         }

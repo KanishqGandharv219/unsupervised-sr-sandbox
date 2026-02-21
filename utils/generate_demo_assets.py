@@ -63,10 +63,12 @@ def main():
     print("Loading models...")
     baseline_model = SimpleSRNet().to(DEVICE)
     hybrid_model = SimpleSRNet().to(DEVICE)
+    unsupervised_model = SimpleSRNet().to(DEVICE)
     
     # Attempt to load weights
     baseline_path = "results/best_model.pth"
     hybrid_path = "results_hybrid/best_model.pth"
+    unsupervised_path = "results_unsupervised/best_model.pth"
 
     if os.path.exists(baseline_path):
         baseline_model.load_state_dict(torch.load(baseline_path, map_location=DEVICE))
@@ -80,8 +82,15 @@ def main():
     else:
         print(f"WARNING: {hybrid_path} not found.")
 
+    if os.path.exists(unsupervised_path):
+        unsupervised_model.load_state_dict(torch.load(unsupervised_path, map_location=DEVICE))
+        print(f"Loaded Unsupervised: {unsupervised_path}")
+    else:
+        print(f"WARNING: {unsupervised_path} not found.")
+
     baseline_model.eval()
     hybrid_model.eval()
+    unsupervised_model.eval()
 
     # Physics
     downsampler = PhysicsDownsampler(scale_factor=2, psf_sigma=1.0, device=DEVICE)
@@ -112,12 +121,14 @@ def main():
             # Model Inference
             sr_baseline = baseline_model(lr)
             sr_hybrid = hybrid_model(lr)
+            sr_unsupervised = unsupervised_model(lr).clamp(0, 1)
             
             # --- Metrics ---
             # Calculate for this sample
             m_bicubic = {'psnr': calculate_psnr(bicubic, hr), 'ssim': calculate_ssim(bicubic, hr)}
             m_baseline = {'psnr': calculate_psnr(sr_baseline, hr), 'ssim': calculate_ssim(sr_baseline, hr)}
             m_hybrid = {'psnr': calculate_psnr(sr_hybrid, hr), 'ssim': calculate_ssim(sr_hybrid, hr)}
+            m_unsupervised = {'psnr': calculate_psnr(sr_unsupervised, hr), 'ssim': calculate_ssim(sr_unsupervised, hr)}
             
             # Accumulate averages
             avg_psnr['bicubic'] += m_bicubic['psnr']
@@ -136,6 +147,7 @@ def main():
             save_image(bicubic, os.path.join(sample_dir, "bicubic.png"))
             save_image(sr_baseline, os.path.join(sample_dir, "sr_baseline.png"))
             save_image(sr_hybrid, os.path.join(sample_dir, "sr_hybrid.png"))
+            save_image(sr_unsupervised, os.path.join(sample_dir, "sr_unsupervised.png"))
             save_image(hr, os.path.join(sample_dir, "hr.png"))
             
             # Collect for Grid (Keep first 3 for grid)
@@ -153,7 +165,8 @@ def main():
                 "metrics": {
                     "bicubic": m_bicubic,
                     "sr_baseline": m_baseline,
-                    "sr_hybrid": m_hybrid
+                    "sr_hybrid": m_hybrid,
+                    "sr_unsupervised": m_unsupervised
                 }
             }
 

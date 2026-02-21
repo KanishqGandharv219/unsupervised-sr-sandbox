@@ -103,6 +103,8 @@
                             Baseline</button>
                         <button class="method-btn active" data-method="sr_hybrid" onclick="selectMethod('sr_hybrid')">SR
                             Hybrid (Physics)</button>
+                        <button class="method-btn" data-method="sr_unsupervised"
+                            onclick="selectMethod('sr_unsupervised')">SR Unsupervised</button>
                         <button class="method-btn" data-method="hr" onclick="selectMethod('hr')">Ground Truth</button>
                     </div>
 
@@ -158,37 +160,41 @@
                             <thead>
                                 <tr>
                                     <th>Method</th>
-                                    <th>Avg PSNR (dB)</th>
-                                    <th>Avg SSIM</th>
-                                    <th>Notes</th>
+                                    <th>Arc Sharpness Score</th>
+                                    <th>Ring Contrast Ratio</th>
+                                    <th>Training Signal</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>Bicubic Interpolation</td>
-                                    <td>12.37</td>
-                                    <td>0.640</td>
-                                    <td>Baseline standard upsampling.</td>
+                                    <td>221.96</td>
+                                    <td>5.08</td>
+                                    <td>N/A</td>
                                 </tr>
                                 <tr>
                                     <td>SR Baseline (Supervised)</td>
-                                    <td>15.91</td>
-                                    <td>0.919</td>
-                                    <td>Trained on paired data. Sharp but sometimes noisy.</td>
+                                    <td>268.50</td>
+                                    <td>4.97</td>
+                                    <td>HR labels</td>
                                 </tr>
                                 <tr>
                                     <td><strong>SR Hybrid (Physics-Informed)</strong></td>
-                                    <td><strong>16.17</strong></td>
-                                    <td><strong>0.922</strong></td>
-                                    <td><strong>Trained with physical degradation loss. Highest structural
-                                            fidelity.</strong></td>
+                                    <td><strong>267.41</strong></td>
+                                    <td><strong>5.39</strong></td>
+                                    <td><strong>Sup + Physics. Highest contrast.</strong></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Unsupervised (Physics-Only)</strong></td>
-                                    <td><strong>13.27</strong></td>
-                                    <td><strong>0.821</strong></td>
-                                    <td><strong>No HR labels used! Solved solely via Physics Consistency + TV
-                                            Regularization.</strong></td>
+                                    <td><strong>249.40</strong></td>
+                                    <td><strong>4.83</strong></td>
+                                    <td><strong>Physics only. TV Regularized.</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>HR Ground Truth</td>
+                                    <td>266.39</td>
+                                    <td>5.14</td>
+                                    <td>Target</td>
                                 </tr>
                             </tbody>
                         </table>
