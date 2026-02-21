@@ -7,7 +7,7 @@ from scipy.ndimage import gaussian_filter
 # Fixed seed for reproducibility
 np.random.seed(42)
 
-def create_mock_lens(size=64, class_type='no_sub', inner_r=8, outer_r=28):
+def create_mock_lens(size=64, class_type='no_sub', inner_r=8, outer_r=28, hard_mode=False):
     """
     Generates a 64x64 float32 mock image resembling DeepLense Model I format.
     - Base: Elliptical ring (SIE-like approximation)
@@ -58,9 +58,10 @@ def create_mock_lens(size=64, class_type='no_sub', inner_r=8, outer_r=28):
             
             # Vortex profile (dark hole)
             v_dist = np.sqrt((x - vx)**2 + (y - vy)**2)
-            v_radius = np.random.uniform(1.0, 2.5)
+            v_radius = np.random.uniform(0.8, 1.5) if hard_mode else np.random.uniform(1.0, 2.5)
+            v_intensity = 0.4 if hard_mode else 0.8
             # Subtract brightness
-            img -= 0.8 * ring_brightness * np.exp(-(v_dist**2) / (2 * v_radius**2))
+            img -= v_intensity * ring_brightness * np.exp(-(v_dist**2) / (2 * v_radius**2))
             
     elif class_type == 'subhalo':
         # Add 1-3 bright blobs near/on the ring
@@ -73,14 +74,15 @@ def create_mock_lens(size=64, class_type='no_sub', inner_r=8, outer_r=28):
             sy = cy + s_rad * np.sin(s_angle)
             
             s_dist = np.sqrt((x - sx)**2 + (y - sy)**2)
-            s_radius = np.random.uniform(1.5, 3.0)
-            img += np.random.uniform(0.5, 1.5) * ring_brightness * np.exp(-(s_dist**2) / (2 * s_radius**2))
+            s_radius = np.random.uniform(0.8, 1.8) if hard_mode else np.random.uniform(1.5, 3.0)
+            s_intensity = np.random.uniform(0.2, 0.6) if hard_mode else np.random.uniform(0.5, 1.5)
+            img += s_intensity * ring_brightness * np.exp(-(s_dist**2) / (2 * s_radius**2))
             
     # Clip to baseline positive physically meaningful values
     img = np.clip(img, 0, None)
     
     # Apply PSF Blurring (sigma 1.0 - 1.5) representing the physical telescope convolution
-    psf_sigma = np.random.uniform(1.0, 1.5)
+    psf_sigma = np.random.uniform(1.5, 2.0) if hard_mode else np.random.uniform(1.0, 1.5)
     img = gaussian_filter(img, sigma=psf_sigma)
     
     # Normalize clean signal between 0 and 1 before adding noise
@@ -91,7 +93,8 @@ def create_mock_lens(size=64, class_type='no_sub', inner_r=8, outer_r=28):
     # Add Gaussian Noise (SNR ~ 25)
     # SNR = mean(signal) / std(noise).
     mean_signal = img[img > 0.1].mean() if (img > 0.1).sum() > 0 else 0.5
-    noise_std = mean_signal / 25.0
+    snr_target = 15.0 if hard_mode else 25.0
+    noise_std = mean_signal / snr_target
     noise = np.random.normal(0, noise_std, img.shape).astype(np.float32)
     img += noise
     
@@ -102,6 +105,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate Mock DeepLense Model I Dataset")
     parser.add_argument("--out_dir", type=str, default="data/Model_I", help="Output directory")
     parser.add_argument("--samples_per_class", type=int, default=100, help="Samples per class")
+    parser.add_argument("--hard_mode", action="store_true", help="Generate a harder dataset with lower SNR and smaller structures")
     args = parser.parse_args()
     
     classes = ['no_sub', 'vortex', 'subhalo']
@@ -112,7 +116,7 @@ def main():
         
         print(f"Generating {args.samples_per_class} samples for class: {cls}")
         for i in tqdm(range(args.samples_per_class)):
-            img = create_mock_lens(size=64, class_type=cls)
+            img = create_mock_lens(size=64, class_type=cls, hard_mode=args.hard_mode)
             filepath = os.path.join(class_dir, f"sample_{i:04d}.npy")
             np.save(filepath, img)
             

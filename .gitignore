@@ -23,3 +23,7 @@ node_modules/
 package-lock.json
 "data/Model_I/" 
 "results_unsupervised/" 
+*.npy  
+*.pth  
+__pycache__/ 
+black_hole/ 

@@ -1,4 +1,4 @@
-# DeepLense-SR: supervised + physics-informed super-resolution for strong lensing images
+# DeepLense-SR: Supervised + Physics-informed super-resolution for strong lensing images
 
 > 🔬 Preparing for [ML4Sci DeepLense GSoC 2026 projects](https://ml4sci.org/gsoc/projects/2026/project_DEEPLENSE.html), 
 > especially the physics-guided ML and real-lensing-image analysis projects.
@@ -178,7 +178,28 @@ Motivated by Paper 2 (Alexander et al., 2020) and Paper 3 (LensPINN, NeurIPS 202
 - `vortex`: Axion dark matter (vortex substructure)
 - `subhalo`: CDM subhalo substructure
 
-**Planned**: Train a lightweight CNN classifier on SR-outputs vs raw Bicubic inputs and show that SR pre-processing improves classification ROC-AUC on DeepLense Model I data, directly mirroring the experimental setup of LensPINN and HEAL-PINN.
+**Results**: We trained a ResNet18-based multi-class classifier on $3000$ stratified mock samples (compatible with DeepLense Model I) to distinguish `no_sub`, `vortex`, and `subhalo` substructures over 30 epochs under two physical configurations.
+
+### 5.1 Easy vs Hard Configuration Comparison
+
+* **Easy Mock Setup:** Standard PSF blur (σ ~1.2) and typical SNR (~25), modeling visually clean Einstein rings.
+* **Hard Mock Setup:** Increased physical telescope convolution PSF spread ($\sigma \in [1.5, 2.0]$), lowered target observational SNR (~15), and radically diminished the visual sizes and intensities of the underlying substructure perturbations closer to the noise floor.
+
+| Mode | Input Type | Val AUC (OvR) | Interpretation |
+|------|------------|---------------|----------------|
+| Easy | Bicubic    | 0.9997        | Task saturated; all inputs linearly separable. |
+| Easy | SR Hybrid  | 0.9995        | Matches Bicubic/HR within noise. |
+| Easy | HR         | 0.9994        | Upper bound; similar to Bicubic/SR. |
+| Hard | Bicubic    | 0.9220        | Baseline drops, still usable signal. |
+| Hard | SR Hybrid  | 0.8982        | Physics-informed SR regularizes faint structures away. |
+| Hard | HR         | 0.9193        | Approximate upper bound on this mock. |
+
+**Finding**: In the harder mock regime with faint substructure, the current unsupervised SR acts as a strong regularizer, removing high-frequency noise and some physical subhalo signal, so Bicubic interpolation slightly outperforms SR for classification; this highlights exactly where the physics-informed loss needs to be improved (e.g., by explicitly preserving subhalo-sensitive features) rather than over-smoothed.
+
+These Hard Mode results define a clear next step for the GSoC project: adjust the physics loss / architecture so that SR preserves faint, physically meaningful substructures while still denoising, and then re-run this benchmark.
+
+![Easy Mock Setup Curves](results_classifier/roc_comparison.png)
+![Hard Mock Setup Curves](results_classifier/hard_roc_comparison.png)
 
 ## 6. Key Files Created
 - `data/lensing_dataset.py`: Synthetic generator.
@@ -208,7 +229,6 @@ This pipeline was systematically extended to fully align with the official ML4Sc
 - We quantified structural improvements across 200 validations using the **Wilcoxon Signed-Rank Test**.
 
 ## 9. Next Steps for GSoC
-- **(Planned) Dark Matter Classifier**: Train a CNN/ViT classifier (following Paper 2 and LensPINN/Paper 3) on SR-enhanced DeepLense images to distinguish `no_sub`, `vortex`, `subhalo` substructure types.
 - **(Planned) Physics-Informed Preprocessing**: Implement the LensPINN-style physics preprocessing term $\tanh(\nabla_x \, \nabla_y(\log(I_{\max}/I))^2)$ as an additional input channel, following Paper 3.
 - **(Planned) Real Data**: Extend pipeline to real HST-like lensing images as described in Paper 3 and Paper 4.
 - **(Planned) Unsupervised Substructure Detection**: Extend Paper 1's approach (unsupervised anomaly detection) to SR-preprocessed images, studying whether SR improves detection sensitivity.
