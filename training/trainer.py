@@ -7,14 +7,30 @@ import os
 from utils.metrics import calculate_psnr, calculate_ssim
 from utils.visualization import save_comparison_grid
 
+def total_variation_loss(img):
+    """
+    Compute Total Variation (TV) regularization.
+    Encourages spatial smoothness while preserving edges.
+    """
+    # Horizontal differences
+    diff_h = torch.abs(img[:, :, 1:, :] - img[:, :, :-1, :])
+    # Vertical differences  
+    diff_w = torch.abs(img[:, :, :, 1:] - img[:, :, :, :-1])
+    
+    tv = diff_h.mean() + diff_w.mean()
+    return tv
+
 class Trainer:
-    def __init__(self, model, train_loader, val_loader, device='cuda', lr=1e-3, results_dir='results', physics=None):
+    def __init__(self, model, train_loader, val_loader, device='cuda', lr=1e-3, results_dir='results', physics=None, mode='hybrid', lambda_tv=0.01):
         self.model = model.to(device)
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.device = device
         self.results_dir = results_dir
         self.physics = physics # PhysicsDownsampler instance
+        
+        self.mode = mode
+        self.lambda_tv = lambda_tv
         
         self.criterion = nn.MSELoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
@@ -26,11 +42,12 @@ class Trainer:
         running_loss = 0.0
         running_sup_loss = 0.0
         running_phy_loss = 0.0
+        running_tv_loss = 0.0
         
         pbar = tqdm(self.train_loader, desc=f"Epoch {epoch} [Train]")
         
-        for lr_imgs, hr_imgs in pbar:
-            lr_imgs, hr_imgs = lr_imgs.to(self.device), hr_imgs.to(self.device)
+        for batch in pbar:
+            lr_imgs, hr_imgs = batch[0].to(self.device), batch[1].to(self.device)
             
             # Zero grad
             self.optimizer.zero_grad()
@@ -38,25 +55,35 @@ class Trainer:
             # Forward
             sr_imgs = self.model(lr_imgs)
             
+            total_loss = torch.tensor(0.0, device=self.device)
+            
             # 1. Supervised Loss (SR vs HR)
-            sup_loss = self.criterion(sr_imgs, hr_imgs)
+            sup_loss = torch.tensor(0.0, device=self.device)
+            if self.mode in ['supervised', 'hybrid']:
+                sup_loss = self.criterion(sr_imgs, hr_imgs)
+                # If mode is explicitly supervised, we don't multiply by a lambda
+                lambda_sup = 1.0
+                total_loss += lambda_sup * sup_loss
             
             # 2. Physics/Unsupervised Loss (P(SR) vs LR)
             phy_loss = torch.tensor(0.0, device=self.device)
-            if self.physics is not None and lambda_physics > 0:
+            if self.mode in ['hybrid', 'unsupervised'] and self.physics is not None:
                 # Generate Simulated LR from SR (Deterministic)
                 lr_pred = self.physics(sr_imgs, deterministic=True)
                 
-                # Check shapes (Physics might return slightly different size depending on padding/interp)
-                # But here we assume it matches LR input exactly if scale factor is correct
                 if lr_pred.shape != lr_imgs.shape:
-                    # In case of minor mismatch, interpolate lr_pred to match lr_imgs
                     lr_pred = torch.nn.functional.interpolate(lr_pred, size=lr_imgs.shape[2:], mode='bilinear', align_corners=False)
                 
                 phy_loss = self.criterion(lr_pred, lr_imgs)
-            
-            # Total Loss
-            total_loss = sup_loss + lambda_physics * phy_loss
+                # In unsupervised mode, physics is the primary driver (lambda_physics typically 1.0)
+                # In hybrid, it's weighted by lambda_physics
+                total_loss += lambda_physics * phy_loss
+                
+            # 3. Total Variation Regularization (Unsupervised Only)
+            tv_loss = torch.tensor(0.0, device=self.device)
+            if self.mode == 'unsupervised':
+                tv_loss = total_variation_loss(sr_imgs)
+                total_loss += self.lambda_tv * tv_loss
             
             # Backward
             total_loss.backward()
@@ -65,11 +92,13 @@ class Trainer:
             running_loss += total_loss.item()
             running_sup_loss += sup_loss.item()
             running_phy_loss += phy_loss.item()
+            running_tv_loss += tv_loss.item()
             
             pbar.set_postfix({
                 'loss': total_loss.item(), 
                 'sup': sup_loss.item(), 
-                'phy': phy_loss.item()
+                'phy': phy_loss.item(),
+                'tv': tv_loss.item()
             })
             
         return running_loss / len(self.train_loader)
@@ -83,8 +112,8 @@ class Trainer:
         saved_viz = False
         
         with torch.no_grad():
-            for lr_imgs, hr_imgs in tqdm(self.val_loader, desc=f"Epoch {epoch} [Val]"):
-                lr_imgs, hr_imgs = lr_imgs.to(self.device), hr_imgs.to(self.device)
+            for batch in tqdm(self.val_loader, desc=f"Epoch {epoch} [Val]"):
+                lr_imgs, hr_imgs = batch[0].to(self.device), batch[1].to(self.device)
                 
                 sr_imgs = self.model(lr_imgs).clamp(0, 1) # Ensure valid range for legacy
                 

@@ -69,4 +69,4 @@ class PhysicsDownsampler:
             noise = torch.randn_like(lr_img) * self.noise_level
             lr_img = lr_img + noise
         
-        return lr_img.clamp(0, 1)
+        return lr_img

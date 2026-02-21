@@ -21,3 +21,5 @@ __MACOSX/
 # Temporary JS files
 node_modules/
 package-lock.json
+"data/Model_I/" 
+"results_unsupervised/" 

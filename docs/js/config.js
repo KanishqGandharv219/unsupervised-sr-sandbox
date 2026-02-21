@@ -5,16 +5,16 @@ const demoConfig = {
         "description": "Nearly complete Einstein ring with strong symmetry (\u03b8_E \u2248 1.2\").",
         "metrics": {
             "bicubic": {
-                "psnr": 9.643121793030062,
-                "ssim": 0.5932372000348598
+                "psnr": 14.26781993399821,
+                "ssim": 0.905741461037739
             },
             "sr_baseline": {
-                "psnr": 11.293351948179664,
-                "ssim": 0.6267538782564633
+                "psnr": 14.854376724383641,
+                "ssim": 0.8916335209725728
             },
             "sr_hybrid": {
-                "psnr": 11.050082119641317,
-                "ssim": 0.63487463408647
+                "psnr": 15.013692184565695,
+                "ssim": 0.8901038418981323
             }
         }
     },
@@ -23,16 +23,16 @@ const demoConfig = {
         "description": "Partial arc configuration with visible source structure.",
         "metrics": {
             "bicubic": {
-                "psnr": 8.601615373358268,
-                "ssim": 0.597982133059861
+                "psnr": 15.725063519328842,
+                "ssim": 0.8845187953089704
             },
             "sr_baseline": {
-                "psnr": 10.101006679901602,
-                "ssim": 0.6635748022208245
+                "psnr": 15.633777735173954,
+                "ssim": 0.8575536253043715
             },
             "sr_hybrid": {
-                "psnr": 9.92433236150428,
-                "ssim": 0.6699115279862629
+                "psnr": 15.824284416510341,
+                "ssim": 0.8548851595675477
             }
         }
     },
@@ -41,16 +41,16 @@ const demoConfig = {
         "description": "Quad-like lens showing multiply imaged source components.",
         "metrics": {
             "bicubic": {
-                "psnr": 14.165123001199616,
-                "ssim": 0.7166010486083847
+                "psnr": 14.758089053888185,
+                "ssim": 0.9259996639739603
             },
             "sr_baseline": {
-                "psnr": 13.360610044638685,
-                "ssim": 0.7029658391735074
+                "psnr": 16.68076991971661,
+                "ssim": 0.9181158855362539
             },
             "sr_hybrid": {
-                "psnr": 13.757645097701367,
-                "ssim": 0.7157872016857268
+                "psnr": 16.82239926447162,
+                "ssim": 0.9179017630612808
             }
         }
     },
@@ -59,16 +59,16 @@ const demoConfig = {
         "description": "Faint Einstein ring obscured by higher noise levels.",
         "metrics": {
             "bicubic": {
-                "psnr": 11.280647582750214,
-                "ssim": 0.6425762421340215
+                "psnr": 13.65100604640193,
+                "ssim": 0.934450285418422
             },
             "sr_baseline": {
-                "psnr": 12.920632054803026,
-                "ssim": 0.6691855955425999
+                "psnr": 12.652072098784071,
+                "ssim": 0.9347789250004164
             },
             "sr_hybrid": {
-                "psnr": 12.825128265421558,
-                "ssim": 0.6793346095001868
+                "psnr": 13.218695834748404,
+                "ssim": 0.9401718038759957
             }
         }
     },
@@ -77,16 +77,16 @@ const demoConfig = {
         "description": "Complex substructure visible in the lensed arc.",
         "metrics": {
             "bicubic": {
-                "psnr": 10.464549768369531,
-                "ssim": 0.6123785759802957
+                "psnr": 15.403912672942784,
+                "ssim": 0.9404917452550813
             },
             "sr_baseline": {
-                "psnr": 12.089868695613193,
-                "ssim": 0.6417928428591786
+                "psnr": 16.054162222410984,
+                "ssim": 0.9287566209874171
             },
             "sr_hybrid": {
-                "psnr": 11.976800628121918,
-                "ssim": 0.6558377575417195
+                "psnr": 16.035970276141764,
+                "ssim": 0.922821817797798
             }
         }
     },
@@ -95,16 +95,16 @@ const demoConfig = {
         "description": "High-magnification fold caustic configuration.",
         "metrics": {
             "bicubic": {
-                "psnr": 14.152896893796317,
-                "ssim": 0.6292086535495541
+                "psnr": 15.760922846439216,
+                "ssim": 0.907119457489245
             },
             "sr_baseline": {
-                "psnr": 14.629294868752929,
-                "ssim": 0.6185023308633057
+                "psnr": 16.742308150897824,
+                "ssim": 0.8892470627810527
             },
             "sr_hybrid": {
-                "psnr": 14.590900327278897,
-                "ssim": 0.6316609618239609
+                "psnr": 16.610676405869828,
+                "ssim": 0.8842845121476086
             }
         }
     },
@@ -113,16 +113,16 @@ const demoConfig = {
         "description": "Small Einstein radius system, barely resolved in LR.",
         "metrics": {
             "bicubic": {
-                "psnr": 14.420839045758937,
-                "ssim": 0.6423325089297028
+                "psnr": 14.597888429601166,
+                "ssim": 0.917806149556719
             },
             "sr_baseline": {
-                "psnr": 14.579760161787163,
-                "ssim": 0.6280145289356445
+                "psnr": 16.45533221397271,
+                "ssim": 0.9111196052872185
             },
             "sr_hybrid": {
-                "psnr": 14.654953521994447,
-                "ssim": 0.6435178963115326
+                "psnr": 16.460899248500745,
+                "ssim": 0.90703702986453
             }
         }
     },
@@ -131,16 +131,16 @@ const demoConfig = {
         "description": "Bright active galactic nucleus (AGN) host galaxy lens.",
         "metrics": {
             "bicubic": {
-                "psnr": 8.9344928751631,
-                "ssim": 0.5456862337906666
+                "psnr": 16.046229630751,
+                "ssim": 0.9126459209693598
             },
             "sr_baseline": {
-                "psnr": 10.568055214101609,
-                "ssim": 0.6381429497254447
+                "psnr": 16.33818876130127,
+                "ssim": 0.8932214709226923
             },
             "sr_hybrid": {
-                "psnr": 10.568186136770208,
-                "ssim": 0.6477093301994746
+                "psnr": 16.236294287567276,
+                "ssim": 0.8881864010330897
             }
         }
     },
@@ -149,16 +149,16 @@ const demoConfig = {
         "description": "Asymmetric arc due to elliptical lens mass potential.",
         "metrics": {
             "bicubic": {
-                "psnr": 8.706367753571158,
-                "ssim": 0.6163295601317703
+                "psnr": 15.273749365708504,
+                "ssim": 0.9271900608834415
             },
             "sr_baseline": {
-                "psnr": 10.027691859445211,
-                "ssim": 0.6959220174983516
+                "psnr": 16.829975876914588,
+                "ssim": 0.9159653534964347
             },
             "sr_hybrid": {
-                "psnr": 9.854707953872875,
-                "ssim": 0.7003489230014993
+                "psnr": 16.593655856788757,
+                "ssim": 0.9116572631029113
             }
         }
     },
@@ -167,16 +167,16 @@ const demoConfig = {
         "description": "Double ring structure suggesting dual source planes.",
         "metrics": {
             "bicubic": {
-                "psnr": 11.346390720157665,
-                "ssim": 0.6016358369640236
+                "psnr": 15.93836670048825,
+                "ssim": 0.9223294946654089
             },
             "sr_baseline": {
-                "psnr": 12.616726525008499,
-                "ssim": 0.6542214732905064
+                "psnr": 16.727802584964046,
+                "ssim": 0.9075686325995732
             },
             "sr_hybrid": {
-                "psnr": 12.563328354780548,
-                "ssim": 0.663248182215709
+                "psnr": 16.416224786219438,
+                "ssim": 0.9002798843185343
             }
         }
     },
@@ -185,16 +185,16 @@ const demoConfig = {
         "description": "Gravitationally sheared background galaxy.",
         "metrics": {
             "bicubic": {
-                "psnr": 10.25791459717751,
-                "ssim": 0.5962084482404443
+                "psnr": 14.984691545252943,
+                "ssim": 0.9494850074387334
             },
             "sr_baseline": {
-                "psnr": 12.54736323645857,
-                "ssim": 0.6626527234092443
+                "psnr": 16.02248346115118,
+                "ssim": 0.9435527009820824
             },
             "sr_hybrid": {
-                "psnr": 12.560106653671752,
-                "ssim": 0.6782430906200895
+                "psnr": 16.02232257779121,
+                "ssim": 0.9403135526690557
             }
         }
     },
@@ -203,30 +203,30 @@ const demoConfig = {
         "description": "Edge-on spiral source galaxy strongly distorted.",
         "metrics": {
             "bicubic": {
-                "psnr": 12.183741838322064,
-                "ssim": 0.6201433189740397
+                "psnr": 14.2377031417487,
+                "ssim": 0.9408083099530795
             },
             "sr_baseline": {
-                "psnr": 13.75710206753952,
-                "ssim": 0.6565200052114467
+                "psnr": 12.995557644188944,
+                "ssim": 0.9370620134114935
             },
             "sr_hybrid": {
-                "psnr": 13.739392661819195,
-                "ssim": 0.6709154552285085
+                "psnr": 13.515474998686363,
+                "ssim": 0.9384740212584506
             }
         }
     }
 },
   "stats": {
     "psnr": {
-        "bicubic": 11.179808436887873,
-        "sr_baseline": 12.374288613019138,
-        "sr_hybrid": 12.33879700688153
+        "bicubic": 15.053786907212476,
+        "sr_baseline": 15.665567282821653,
+        "sr_hybrid": 15.730882511488451
     },
     "ssim": {
-        "bicubic": 0.6178599800331354,
-        "sr_baseline": 0.6548540822488764,
-        "sr_hybrid": 0.665949130850095
+        "bicubic": 0.9223821959958466,
+        "sr_baseline": 0.9107146181067983,
+        "sr_hybrid": 0.9080097542162445
     }
 }
 };

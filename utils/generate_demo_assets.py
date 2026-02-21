@@ -14,7 +14,7 @@ import numpy as np
 import json
 from tqdm import tqdm
 from torchvision.utils import save_image, make_grid
-from data.lensing_dataset import SyntheticLensingDataset
+from src.data.deeplense_dataset import DeepLenseDataset
 from models.baseline import SimpleSRNet
 from utils.physics import PhysicsDownsampler
 from utils.metrics import calculate_psnr, calculate_ssim
@@ -27,19 +27,6 @@ GRIDS_DIR = os.path.join(OUTPUT_DIR, "grids")
 CONFIG_PATH = "docs/js/config.js"
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-BASELINE_PATH = "best_model.pth" # Using the best model from latest run (likely baseline)
-# In a real scenario, we'd load specific paths. Assuming 'best_model.pth' is available.
-# Ideally, we should have 'baseline_model.pth' and 'hybrid_model.pth'. 
-# For this demo, let's assume we might need to re-run training or use what we have.
-# If only one model exists, we will simulate the "other" for demo purposes or use checkpoints if available.
-# CHECK: Do we have separate checkpoints?
-# From context: 'simple_sr.pth' exists (maybe old baseline?), 'best_model.pth' exists (from hybrid run).
-# Let's use:
-# Baseline Model <- 'simple_sr.pth' (if permissible, else reuse best_model as placeholder but ideally we want variety)
-# Hybrid Model <- 'best_model.pth'
-
-# Let's try to find if we have multiple models. 
-# If not, I will use 'best_model.pth' for Hybrid and 'simple_sr.pth' for Baseline.
 
 def ensure_dirs():
     os.makedirs(SAMPLES_DIR, exist_ok=True)
@@ -70,7 +57,7 @@ def main():
 
     # 1. Load Data
     # Use validation set to ensure unseen data
-    dataset = SyntheticLensingDataset(num_samples=200, img_size=64) # Generate fresh val set
+    dataset = DeepLenseDataset(root_dir='data', model='Model_I', split='val')
     
     # 2. Load Models
     print("Loading models...")
@@ -111,8 +98,8 @@ def main():
 
     with torch.no_grad():
         for i, idx in enumerate(tqdm(indices, desc="Processing Samples")):
-            # dataset returns (lr, hr)
-            _, hr = dataset[idx]
+            # dataset returns (lr, hr, label)
+            _, hr, _ = dataset[idx]
             hr = hr.unsqueeze(0).to(DEVICE) # (1, 1, 64, 64)
             
             # Generate LR
