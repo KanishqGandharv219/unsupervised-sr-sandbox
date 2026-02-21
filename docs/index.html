@@ -120,12 +120,12 @@
                     <h3>Metrics</h3>
                     <div class="metrics-card">
                         <div class="metric-row">
-                            <span>PSNR</span>
-                            <span id="psnr-val" class="metric-val">--</span>
+                            <span>Arc Sharpness</span>
+                            <span id="arc-sharpness-val" class="metric-val">--</span>
                         </div>
                         <div class="metric-row">
-                            <span>SSIM</span>
-                            <span id="ssim-val" class="metric-val">--</span>
+                            <span>Ring Contrast</span>
+                            <span id="ring-contrast-val" class="metric-val">--</span>
                         </div>
                     </div>
 
@@ -151,7 +151,7 @@
 
             <div class="grid-gallery">
                 <div class="glass-panel" style="padding: 1.5rem;">
-                    <h3>Method Comparison (Validated on 200 Samples)</h3>
+                    <h3>Method Comparison (DeepLense Model I-compatible Mock Validation)</h3>
                     <p>Comparison of average performance across the validation set.</p>
                     <div style="width: 100%; overflow-x: auto;">
                         <table class="results-table">
@@ -166,21 +166,29 @@
                             <tbody>
                                 <tr>
                                     <td>Bicubic Interpolation</td>
-                                    <td>25.21</td>
-                                    <td>0.7203</td>
-                                    <td>Baseline standard upsamping.</td>
+                                    <td>12.37</td>
+                                    <td>0.640</td>
+                                    <td>Baseline standard upsampling.</td>
                                 </tr>
                                 <tr>
                                     <td>SR Baseline (Supervised)</td>
-                                    <td>30.15</td>
-                                    <td>0.8950</td>
+                                    <td>15.91</td>
+                                    <td>0.919</td>
                                     <td>Trained on paired data. Sharp but sometimes noisy.</td>
                                 </tr>
                                 <tr>
                                     <td><strong>SR Hybrid (Physics-Informed)</strong></td>
-                                    <td><strong>30.42</strong></td>
-                                    <td><strong>0.9012</strong></td>
-                                    <td>Enforces physical consistency ($\mathcal{L}_{phy}$).</td>
+                                    <td><strong>16.17</strong></td>
+                                    <td><strong>0.922</strong></td>
+                                    <td><strong>Trained with physical degradation loss. Highest structural
+                                            fidelity.</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Unsupervised (Physics-Only)</strong></td>
+                                    <td><strong>13.27</strong></td>
+                                    <td><strong>0.821</strong></td>
+                                    <td><strong>No HR labels used! Solved solely via Physics Consistency + TV
+                                            Regularization.</strong></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -193,7 +201,8 @@
                     <img src="assets/grids/comparison_3x5.png" alt="Comparison Grid: LR vs Methods vs HR"
                         style="margin-top: 1rem;">
                     <p style="text-align: center; font-size: 0.9em; margin-top: 1rem;">
-                        <em>Left to Right: Low Res, Bicubic, SR Baseline, SR Hybrid, High Res (Ground Truth)</em>
+                        <em>Left to Right: Low Res, Bicubic, SR Baseline, SR Hybrid, High Res (Ground Truth)</em><br>
+                        *(Note: Unsupervised not shown in standard validation grid)*
                     </p>
                 </div>
             </div>

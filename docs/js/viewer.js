@@ -9,8 +9,8 @@ let currentMethod = 'sr_hybrid'; // Default method
 const sampleListEl = document.getElementById('sample-list');
 const mainImageEl = document.getElementById('main-image');
 const methodBtns = document.querySelectorAll('.method-btn');
-const psnrValEl = document.getElementById('psnr-val');
-const ssimValEl = document.getElementById('ssim-val');
+const arcSharpnessValEl = document.getElementById('arc-sharpness-val');
+const ringContrastValEl = document.getElementById('ring-contrast-val');
 const descTextEl = document.getElementById('desc-text');
 const loadingIndicator = document.getElementById('loading-indicator');
 
@@ -114,18 +114,16 @@ function updateDisplay() {
     mainImageEl.src = imagePath;
 
     // Update Metrics
-    if (metrics) {
-        psnrValEl.textContent = metrics.psnr.toFixed(2);
-        ssimValEl.textContent = metrics.ssim.toFixed(4);
+    // Fallback gracefully since individual sample sharpness isn't inside config.js per element yet (we only extracted aggregate table stats). We'll pull from global stats.
+    if (demoConfig.stats && demoConfig.stats.arc_sharpness && demoConfig.stats.arc_sharpness[currentMethod]) {
+        arcSharpnessValEl.textContent = demoConfig.stats.arc_sharpness[currentMethod].toFixed(2);
+        ringContrastValEl.textContent = demoConfig.stats.ring_contrast[currentMethod].toFixed(2);
 
-        // Color coding
-        // Simple heuristic: > baseline is good
-        // We'd need to know baseline to compare, but generally green is fine for valid numbers
-        psnrValEl.className = 'metric-val';
-        ssimValEl.className = 'metric-val';
+        arcSharpnessValEl.className = 'metric-val';
+        ringContrastValEl.className = 'metric-val';
     } else {
-        psnrValEl.textContent = "--";
-        ssimValEl.textContent = "--";
+        arcSharpnessValEl.textContent = "--";
+        ringContrastValEl.textContent = "--";
     }
 }
 
