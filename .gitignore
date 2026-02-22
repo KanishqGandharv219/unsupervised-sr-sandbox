@@ -1,29 +1,46 @@
-
+# Virtual Environment
 .venv/
+/.env
+
+# Python bytecode
 __pycache__/
+*.py[cod]
+
+# Machine Learning models & parameters
+*.pth
+*.npy
 simple_sr.pth
+results_classifier/model_*.pth
+
+# Scientific Results (Keep images, ignore raw data)
 results/*
 !results/*.png
 results_hybrid/*
 !results_hybrid/*.png
+results_unsupervised/
+results_classifier/
+!results_classifier/*.png
+!results_classifier/*.json
+
+# Application Assets
+data/
+!data/.gitkeep
 prompt.txt
-*.log
 debug.py
-# Ignore large data downloads
-data/cifar-10-batches-py/
-data/*.tar.gz
+migrate_assets.py
+robocopy_log.txt
+copy_out.txt
+
+# Web Assets
+node_modules/
+package-lock.json
 
 # System/IDE
 .agent/
-__MACOSX/
+.gemini/
 .DS_Store
+__MACOSX/
 
-# Temporary JS files
-node_modules/
-package-lock.json
-"data/Model_I/" 
-"results_unsupervised/" 
-*.npy  
-*.pth  
-__pycache__/ 
-black_hole/ 
+# Temporary / Junk
+docs/test.txt
+*.log

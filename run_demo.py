@@ -5,7 +5,7 @@ import os
 
 # Configuration
 PORT = 8000
-DIRECTORY = "docs"
+DIRECTORY = "."
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -13,7 +13,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 try:
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        url = f"http://localhost:{PORT}"
+        url = f"http://localhost:{PORT}/docs/index.html"
         print(f"Serving at {url}")
         print("Press Ctrl+C to stop the server.")
         

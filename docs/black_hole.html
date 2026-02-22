@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepLense-SR: Black Hole Rendering</title>
+    <!-- Google Fonts for sleek tech look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #151b2e;
+            --bg-elevated: #1f2937;
+            --bg-primary-glass: rgba(10, 14, 26, 0.65);
+            --bg-secondary-glass: rgba(21, 27, 46, 0.65);
+            --bg-elevated-glass: rgba(31, 41, 55, 0.65);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(16px);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-primary: #06b6d4;
+            --accent-secondary: #ff9900;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-primary);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        section {
+            padding: 6rem 0;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .glass-panel {
+            background: var(--bg-elevated-glass);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #fff;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, #fff, var(--accent-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            line-height: 1.6;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .plot-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+            padding: 1rem;
+            border: var(--glass-border);
+        }
+
+        .plot-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+        }
+
+        /* Loader Overlay Styles */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #050505;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 1s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255, 153, 0, 0.5);
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #progress-text {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Custom GUI overrides */
+        .lil-gui {
+            --background-color: rgba(10, 10, 10, 0.7);
+            --text-color: #eee;
+            --focus-color: var(--accent-secondary);
+            z-index: 100;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #fff, var(--accent-secondary), var(--accent-primary), var(--accent-secondary), #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 5s linear infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+    </style>
+    <!-- Import maps polyfill -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+          "lil-gui": "https://unpkg.com/lil-gui@0.19.1/dist/lil-gui.esm.min.js"
+        }
+      }
+    </script>
+</head>
+
+<body>
+    <!-- Loader Overlay Container -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <div id="progress-text">Loading Singularity Data: 0%</div>
+        <div id="stats-text">Parsing 534k Triangles...</div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import GUI from 'lil-gui';
+
+        // --- Configuration State ---
+        const config = {
+            // Environment
+            bgColor: '#000000',
+            exposure: 0.1, // User preference
+
+            // Post-Processing (Bloom)
+            bloomStrength: 0.5, // User preference
+            bloomRadius: 0.1,   // User preference
+            bloomThreshold: 0,  // User preference
+
+            // Lighting
+            dirLightIntensity: 0.1, // User preference
+            dirLightColor: '#ffffff',
+            dirLightX: 5,
+            dirLightY: 5,
+            dirLightZ: 5,
+            ambLightIntensity: 0.1, // User preference
+            ambLightColor: '#ffffff',
+            diskLightIntensity: 2.0, // New: Light from the accretion disk
+
+            // Materials
+            matColor: '#000000',
+            ringIntensity: 4.0, // User preference
+            coreIntensity: 3.5,  // User preference
+            roughness: 0.0,      // User preference
+            metalness: 0.0,      // User preference
+
+            // Orbit Controls
+            autoRotate: true,
+            autoRotateSpeed: 0.1,
+            dampingFactor: 0.05,
+            camX: -1493.6135802384338,
+            camY: -586.3739130675725,
+            camZ: -510.60303547547716
+        };
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(config.bgColor);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 20000);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+        // Enable physically correct lighting and cinematic color grading
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = config.exposure;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = config.dampingFactor;
+        controls.autoRotate = config.autoRotate;
+        controls.autoRotateSpeed = config.autoRotateSpeed;
+        controls.enableZoom = false; // Disable scroll-zoom for autopilot mode
+
+        const light = new THREE.DirectionalLight(config.dirLightColor, config.dirLightIntensity);
+        light.position.set(config.dirLightX, config.dirLightY, config.dirLightZ);
+        scene.add(light);
+
+        const ambientLight = new THREE.AmbientLight(config.ambLightColor, config.ambLightIntensity);
+        scene.add(ambientLight);
+
+        // Simulated light from the accretion disk (PointLight at center)
+        const diskLight = new THREE.PointLight(0xffffff, config.diskLightIntensity, 0, 1.5);
+        diskLight.position.set(0, 0, 0);
+        scene.add(diskLight);
+
+        camera.position.set(config.camX, config.camY, config.camZ);
+        controls.update();
+
+        // --- Post-Processing Pipeline (Bloom & Glow) ---
+        const renderScene = new RenderPass(scene, camera);
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            config.bloomStrength,
+            config.bloomRadius,
+            config.bloomThreshold
+        );
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        // --- GUI Setup ---
+        const gui = new GUI({ title: 'Singularity Parameters' });
+
+        const fEnv = gui.addFolder('Environment');
+        fEnv.addColor(config, 'bgColor').name('Background').onChange(v => scene.background.set(v));
+        fEnv.add(config, 'exposure', 0, 5, 0.1).name('Exposure').onChange(v => renderer.toneMappingExposure = v);
+
+        const fBloom = gui.addFolder('Post-Processing (Bloom)');
+        fBloom.add(config, 'bloomStrength', 0, 10, 0.1).name('Strength').onChange(v => bloomPass.strength = v);
+        fBloom.add(config, 'bloomRadius', 0, 5, 0.1).name('Radius').onChange(v => bloomPass.radius = v);
+        fBloom.add(config, 'bloomThreshold', 0, 2, 0.05).name('Threshold').onChange(v => bloomPass.threshold = v);
+
+        const fLight = gui.addFolder('Lighting');
+        fLight.add(config, 'dirLightIntensity', 0, 10, 0.1).name('Dir Intensity').onChange(v => light.intensity = v);
+        fLight.addColor(config, 'dirLightColor').name('Dir Color').onChange(v => light.color.set(v));
+        fLight.add(config, 'ambLightIntensity', 0, 5, 0.1).name('Amb Intensity').onChange(v => ambientLight.intensity = v);
+        fLight.addColor(config, 'ambLightColor').name('Amb Color').onChange(v => ambientLight.color.set(v));
+        fLight.add(config, 'diskLightIntensity', 0, 50, 1).name('Disk Light').onChange(v => diskLight.intensity = v);
+
+        const fMat = gui.addFolder('Materials');
+        fMat.addColor(config, 'matColor').name('Base Color').onChange(v => {
+            modelMeshes.forEach(m => { if (m.material.color) m.material.color.set(v); });
+        });
+        fMat.add(config, 'ringIntensity', 0, 100, 1.0).name('Accretion Disk (Rings)').onChange(v => {
+            modelMeshes.forEach(m => {
+                if (m.material.name && m.material.name.includes('ring')) {
+                    m.material.emissiveIntensity = v;
+                }
+            });
+        });
+        fMat.add(config, 'coreIntensity', 0, 50, 0.5).name('Event Horizon (Lights)').onChange(v => {
+            modelMeshes.forEach(m => {
+                const name = m.material.name;
+                if (name && (name.includes('light') || name.includes('blackoutside'))) {
+                    m.material.emissiveIntensity = v;
+                }
+            });
+        });
+        fMat.add(config, 'roughness', 0, 1, 0.05).name('Roughness').onChange(v => {
+            modelMeshes.forEach(m => m.material.roughness = v);
+        });
+        fMat.add(config, 'metalness', 0, 1, 0.05).name('Metalness').onChange(v => {
+            modelMeshes.forEach(m => m.material.metalness = v);
+        });
+
+        const fCtrl = gui.addFolder('Orbit & Camera');
+        fCtrl.add(config, 'autoRotate').name('Auto-Rotate').onChange(v => controls.autoRotate = v);
+        fCtrl.add(config, 'autoRotateSpeed', -10, 10, 0.1).name('Rotate Speed').onChange(v => controls.autoRotateSpeed = v);
+        fCtrl.add(config, 'camX', -5000, 5000, 0.1).name('Cam X').listen().onChange(v => { camera.position.x = v; controls.update(); });
+        fCtrl.add(config, 'camY', -5000, 5000, 0.1).name('Cam Y').listen().onChange(v => { camera.position.y = v; controls.update(); });
+        fCtrl.add(config, 'camZ', -5000, 5000, 0.1).name('Cam Z').listen().onChange(v => { camera.position.z = v; controls.update(); });
+
+        // Reference HTML elements for the loader
+        const loaderEl = document.getElementById('loader');
+        const progressText = document.getElementById('progress-text');
+
+        // --- Assets Loading & Environment ---
+        const texLoader = new THREE.TextureLoader();
+        // Point to assets relative to the HTML file in docs/
+        const envTexture = texLoader.load('assets/env_stars.png');
+        envTexture.mapping = THREE.EquirectangularReflectionMapping;
+        envTexture.colorSpace = THREE.SRGBColorSpace;
+        scene.environment = envTexture;
+        scene.background = new THREE.Color(0x000000); // Keep background black for cinematic contrast
+
+        let modelMeshes = [];
+        const loader = new GLTFLoader();
+
+        loader.load(
+            '/black_hole-v2/black_hole.gltf',
+            function (gltf) {
+                const model = gltf.scene;
+
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.frustumCulled = true;
+                        if (child.material) {
+                            modelMeshes.push(child);
+
+                            // Upgrade materials gracefully without losing maps
+                            const mat = child.material;
+                            const matName = mat.name || "";
+
+                            if (matName.includes('ring')) {
+                                // Restore texture masking for the glow to prevent "whitish" washout
+                                if (mat.map && !mat.emissiveMap) {
+                                    mat.emissiveMap = mat.map;
+                                }
+
+                                mat.transparent = true;
+                                mat.side = THREE.DoubleSide;
+                                mat.emissive.set(0xffffff); // Enable white emissive for intensity control
+                                mat.emissiveIntensity = config.ringIntensity;
+
+                                // Advanced Physical Effects (Sparkle, Glass, Depth)
+                                mat.transmission = matName === 'ring2' ? 0.95 : 0.6;
+                                mat.thickness = 2.0;
+                                mat.ior = 1.5;
+                                mat.clearcoat = 1.0;
+                                mat.clearcoatRoughness = 0.05;
+                                mat.envMapIntensity = 5.0;
+
+                            } else if (matName.includes('center') || matName.includes('blackoutside')) {
+                                // Singularity must be absolute black and non-reflective
+                                mat.color.set(0x000000);
+                                mat.emissive.set(0x000000);
+                                mat.envMapIntensity = 0.0;
+                                mat.transparent = false;
+                                mat.opacity = 1.0;
+                                mat.depthWrite = true;
+                                mat.depthTest = true;
+                            } else if (matName.includes('light')) {
+                                mat.emissiveIntensity = config.coreIntensity;
+                                mat.envMapIntensity = 1.0;
+                                mat.transparent = true; // Lights are often transparent glow shells
+                            } else if (matName.includes('distortion')) {
+                                mat.transparent = true;
+                                mat.opacity = 0.0; // Keep distortion invisible for now
+                                mat.visible = false;
+                            } else {
+                                mat.envMapIntensity = 1.0;
+                            }
+
+                            // Fix: Enable Maximum Anisotropy to preserve fine texture lines at steep angles
+                            const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+
+                            const applyTexSettings = (tex) => {
+                                if (!tex) return;
+                                tex.anisotropy = maxAnisotropy;
+                                // Force repeat mapping if it was lost
+                                tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+                            };
+
+                            applyTexSettings(mat.map);
+                            applyTexSettings(mat.emissiveMap);
+                            applyTexSettings(mat.roughnessMap);
+                            applyTexSettings(mat.metalnessMap);
+                            applyTexSettings(mat.normalMap);
+                            applyTexSettings(mat.specularMap); // V2 uses specularIntensityMap in Three.js terms often
+
+                            mat.flatShading = false;
+                            mat.needsUpdate = true;
+                            if (child.geometry) {
+                                child.geometry.computeVertexNormals();
+                            }
+                        }
+                    }
+                });
+
+                model.scale.set(1, 1, 1);
+                scene.add(model);
+
+                // Removed auto-framing override to respect user coordinates
+
+                // Fade out loader
+                loaderEl.style.opacity = '0';
+                setTimeout(() => loaderEl.style.display = 'none', 1000);
+            },
+            function (xhr) {
+                if (xhr.lengthComputable) {
+                    const percentComplete = (xhr.loaded / xhr.total) * 100;
+                    progressText.innerText = `Loading Buffer Data: ${percentComplete.toFixed(0)}%`;
+                } else {
+                    progressText.innerText = `Parsing GPU Shaders... (24MB)`;
+                }
+            },
+            function (error) {
+                console.error('Error loading black hole model:', error);
+                progressText.innerText = 'Render Initialization Failure';
+                progressText.style.color = '#ff4444';
+                document.querySelector('.spinner').style.borderColor = '#ff4444';
+            }
+        );
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+
+            // Sync camera position back to config for GUI "listen()" to work
+            config.camX = camera.position.x;
+            config.camY = camera.position.y;
+            config.camZ = camera.position.z;
+
+            composer.render();
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+    <!-- SCIENTIFIC REPORT CONTENT -->
+    <div class="container">
+        <!-- HERO OFFSET -->
+        <section id="hero-title">
+            <div class="glass-panel" style="text-align: center;">
+                <h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 1rem;">Scientific Showcase</h1>
+                <p class="highlight" style="font-size: 1.5rem; opacity: 1;">Physics-Informed Super-Resolution for Strong
+                    Lensing</p>
+                <div style="margin-top: 2rem; animation: bounce 2s infinite;">
+                    <span style="font-size: 2rem;">↓</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISION & MOTIVATION -->
+        <section id="vision">
+            <div class="glass-panel">
+                <h2>Vision & Motivation</h2>
+                <p>
+                    Strong gravitational lensing provides a unique probe into dark matter substructure and the mass
+                    distribution of foreground lenses. However, observations from upcoming surveys like
+                    <span class="highlight">LSST (Rubin Observatory)</span> and <span class="highlight">Euclid</span>
+                    will be limited by resolution and point spread function (PSF) effects.
+                </p>
+                <p>
+                    Traditional Super-Resolution (SR) relies on High-Resolution (HR) ground truth, which
+                    <span class="highlight">does not exist</span> for real astronomical observations. We only have
+                    Low-Resolution (LR) images from telescopes. Therefore, relying solely on supervised learning on
+                    simulations is insufficient due to the domain gap.
+                </p>
+            </div>
+        </section>
+
+        <!-- PHYSICS-INFORMED APPROACH -->
+        <section id="approach">
+            <div class="glass-panel">
+                <h2>Physics-Informed Approach</h2>
+                <p>
+                    Our project implements a <span class="highlight">dual-strategy</span> to bridge the gap between
+                    simulations and real survey data:
+                </p>
+                <div class="results-grid">
+                    <div class="plot-container">
+                        <h3 style="color: var(--accent-secondary);">1. Physics Constraints</h3>
+                        <p style="font-size: 1rem;">Enforcing that the Super-Resolved image, when degraded by the known
+                            telescope PSF and downsampling, matches the observed LR image ($L_{phy}$).</p>
+                    </div>
+                    <div class="plot-container">
+                        <h3 style="color: var(--accent-secondary);">2. Domain Adaptation</h3>
+                        <p style="font-size: 1rem;">Bridging the gap between synthetic training data and real
+                            observation
+                            noise signatures to enable zero-shot transfer.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCIENTIFIC VALIDATION -->
+        <section id="validation">
+            <div class="glass-panel">
+                <h2>Scientific Validation</h2>
+                <p> We quantified the physical utility of Super-Resolution using domain-specific metrics beyond standard
+                    vision scores. </p>
+                <div style="overflow-x: auto;">
+                    <table
+                        style="width: 100%; border-collapse: collapse; margin-top: 2rem; color: var(--text-primary);">
+                        <thead style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                            <tr>
+                                <th style="text-align: left; padding: 1rem;">Method</th>
+                                <th style="text-align: left; padding: 1rem;">Arc Sharpness</th>
+                                <th style="text-align: left; padding: 1rem;">Ring Contrast</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <td style="padding: 1rem;">Bicubic Interpolation</td>
+                                <td style="padding: 1rem;">221.96 ± 60.1</td>
+                                <td style="padding: 1rem;">5.08 ± 3.06</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <td style="padding: 1rem;">SR Baseline (Supervised)</td>
+                                <td style="padding: 1rem;">268.50 ± 79.5</td>
+                                <td style="padding: 1rem;">4.97 ± 2.86</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold;">
+                                <td style="padding: 1rem; color: var(--accent-secondary);">SR Hybrid (Physics-Informed)
+                                </td>
+                                <td style="padding: 1rem; color: var(--accent-secondary);">267.41 ± 79.3</td>
+                                <td style="padding: 1rem; color: var(--accent-secondary);">5.39 ± 3.27</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem;">HR Ground Truth</td>
+                                <td style="padding: 1rem;">266.39 ± 77.8</td>
+                                <td style="padding: 1rem;">5.14 ± 3.06</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top: 2rem; font-style: italic; font-size: 0.9rem;"> *Wilcoxon Signed-Rank Test: $p =
+                    1.86
+                    \times 10^{-9}$ for arc sharpness statistical significance. </p>
+            </div>
+        </section>
+
+        <!-- SUBSTRUCTURE CLASSIFICATION -->
+        <section id="classification">
+            <div class="glass-panel">
+                <h2>Dark Matter Substructure Analysis</h2>
+                <p> SR-enhanced images are used to feed downstream classifiers distinguishing between
+                    <span class="highlight">no_sub</span>, <span class="highlight">vortex</span>, and
+                    <span class="highlight">subhalo</span> dark matter models.
+                </p>
+
+                <div class="results-grid">
+                    <div class="plot-container">
+                        <h3>ROC Comparison</h3>
+                        <img src="assets/results/roc_comparison.png" alt="ROC Comparison">
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Baseline classification performance on target
+                            samples.</p>
+                    </div>
+                    <div class="plot-container">
+                        <h3>Confusion Matrices</h3>
+                        <img src="assets/results/confusion_matrices.png" alt="Confusion Matrices">
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Multi-class distribution and false positive
+                            rates.</p>
+                    </div>
+                    <div class="plot-container">
+                        <h3>Hard Mode ROC</h3>
+                        <img src="assets/results/hard_roc_comparison.png" alt="Hard ROC">
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Performance under extreme PSF blur and low
+                            SNR.</p>
+                    </div>
+                    <div class="plot-container">
+                        <h3>Hard Mode Confusion</h3>
+                        <img src="assets/results/hard_confusion_matrices.png" alt="Hard Confusion">
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Misclassification patterns for faint
+                            substructures.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; padding-bottom: 4rem; opacity: 0.5;">
+            <p>© 2026 DeepLense-SR | ML4Sci GSoC Research Port</p>
+        </footer>
+    </div>
+
+    <style>
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+    <!-- MathJax for rendering equations -->
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</body>
+
+</html>
