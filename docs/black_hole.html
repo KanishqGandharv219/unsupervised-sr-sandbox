@@ -59,6 +59,30 @@
             justify-content: center;
         }
 
+        /* Custom Minimal Scrollbar */
+        body {
+            scrollbar-width: thin;
+            scrollbar-color: var(--bg-elevated) var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-elevated);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
         .glass-panel {
             background: var(--bg-elevated-glass);
             backdrop-filter: var(--glass-blur);
@@ -182,6 +206,53 @@
                 background-position: 200% center;
             }
         }
+
+        /* FPS Monitor Styles */
+        #fps-monitor {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            background: var(--bg-primary-glass);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-left: 3px solid var(--accent-secondary);
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .glass-panel {
+                padding: 1.5rem;
+            }
+
+            #hero-title h1 {
+                font-size: 2.5rem !important;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            section {
+                padding: 4rem 0;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
     <!-- Import maps polyfill -->
     <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
@@ -204,6 +275,9 @@
         <div id="progress-text">Loading Singularity Data: 0%</div>
         <div id="stats-text">Parsing 534k Triangles...</div>
     </div>
+
+    <!-- FPS Monitor -->
+    <div id="fps-monitor">FPS: --</div>
 
     <script type="module">
         import * as THREE from 'three';
@@ -272,6 +346,12 @@
         controls.autoRotateSpeed = config.autoRotateSpeed;
         controls.enableZoom = false; // Disable scroll-zoom for autopilot mode
 
+        // Mobile-friendly controls
+        controls.enablePan = false;
+        controls.rotateSpeed = 0.5;
+        controls.minPolarAngle = Math.PI * 0.25;
+        controls.maxPolarAngle = Math.PI * 0.75;
+
         const light = new THREE.DirectionalLight(config.dirLightColor, config.dirLightIntensity);
         light.position.set(config.dirLightX, config.dirLightY, config.dirLightZ);
         scene.add(light);
@@ -301,6 +381,7 @@
 
         // --- GUI Setup ---
         const gui = new GUI({ title: 'Singularity Parameters' });
+        gui.close(); // Collapse by default
 
         const fEnv = gui.addFolder('Environment');
         fEnv.addColor(config, 'bgColor').name('Background').onChange(v => scene.background.set(v));
@@ -473,8 +554,35 @@
             }
         );
 
-        function animate() {
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Loop Logic for FPS
+        let lastTime = 0;
+        let frameCount = 0;
+        const fpsMonitor = document.getElementById('fps-monitor');
+
+        function updateFPS(currentTime) {
+            if (lastTime === 0) {
+                lastTime = currentTime;
+                return;
+            }
+            frameCount++;
+            if (currentTime - lastTime >= 1000) {
+                const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                fpsMonitor.innerText = `FPS: ${fps}`;
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+        }
+
+        function animate(time) {
             requestAnimationFrame(animate);
+            updateFPS(time);
             controls.update();
 
             // Sync camera position back to config for GUI "listen()" to work
@@ -484,14 +592,7 @@
 
             composer.render();
         }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            composer.setSize(window.innerWidth, window.innerHeight);
-        });
+        requestAnimationFrame(animate);
     </script>
 
     <!-- SCIENTIFIC REPORT CONTENT -->
