@@ -383,6 +383,20 @@
         const gui = new GUI({ title: 'Singularity Parameters' });
         gui.close(); // Collapse by default
 
+        // Discreet Credits in GUI
+        const fCredits = gui.addFolder('Credits (3D Assets)');
+        const creditInfo = {
+            'Model': 'Black Hole',
+            'Author': 'NestaEric',
+            'License': 'CC-BY-4.0',
+            'Open Source': () => window.open('https://sketchfab.com/3d-models/black-hole-e410da98b1e5445eae2acafaaa53587d', '_blank')
+        };
+        fCredits.add(creditInfo, 'Model').disable();
+        fCredits.add(creditInfo, 'Author').disable();
+        fCredits.add(creditInfo, 'License').disable();
+        fCredits.add(creditInfo, 'Open Source').name('View Original Model');
+        fCredits.close(); // Keep credits folder closed inside the closed GUI
+
         const fEnv = gui.addFolder('Environment');
         fEnv.addColor(config, 'bgColor').name('Background').onChange(v => scene.background.set(v));
         fEnv.add(config, 'exposure', 0, 5, 0.1).name('Exposure').onChange(v => renderer.toneMappingExposure = v);
@@ -738,7 +752,8 @@
         </section>
 
         <footer style="text-align: center; padding-bottom: 4rem; opacity: 0.5;">
-            <p>© 2026 DeepLense-SR | ML4Sci GSoC Research Port</p>
+            <p>Built by [Kanishq Gandharv] for ML4Sci GSoC 2026</p>
+            <p style="font-size: 0.8rem;">© 2026 DeepLense-SR | Physics-Informed Scientific Showcase</p>
         </footer>
     </div>
 
