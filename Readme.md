@@ -5,7 +5,7 @@
 
 In particular, this repo prepares for the "Physics Guided Machine Learning on Real Lensing Images" project by prototyping physics-informed neural components (consistency losses, lens-specific metrics) on DeepLense-style data.
 
-**physics-informed Super-Resolution and Lens Analysis for Strong Gravitational Lensing**
+**Physics-informed Super-resolution and Lens Analysis for Strong Gravitational Lensing**
 
 ### 🌐 [Live Interactive Demo](https://kanishqgandharv219.github.io/unsupervised-sr-sandbox/)
 Explore the super-resolution reconstructions visually in your browser with the 3D astrophysics-themed viewer.
@@ -21,10 +21,9 @@ This project implements a **Physics-Informed** approach:
 
 > "The goal is not just prettier images, but scientifically accurate recovery of lensing features (arcs, Einstein rings) to enable better mass modeling and substructure detection."
 
-This repository implements core ingredients relevant to the DeepLense GSoC 2026 projects: physics-consistent SR without HR labels and lens-specific downstream metrics for scientific analysis. Short summaries of the project's recommended papers are collected in `notes/paper_summaries.md` (work in progress).
+This repository serves as a technical foundation for the **DEEPLENSE3: Physics Guided Machine Learning on Real Lensing Images** project, specifically prototyping the core physics-informed neural components required for high-fidelity lensing analysis. Short summaries of the project's recommended papers are collected in `notes/paper_summaries.md`.
 
-## Related Contributions
-*   **DeepLense BYOL**: [Link to PR](TODO: Insert Link) - Contribution to self-supervised learning for lens finding.
+
 
 ---
 
@@ -219,7 +218,7 @@ We developed a fully vanilla HTML/CSS/JS frontend hosted via GitHub Pages to vis
 
 This pipeline was systematically extended to fully align with the official ML4Sci specifications:
 
-✅ **DeepLense Dataset Integration**: Designed to seamlessly ingest `Model_I`, `Model_II`, and `Model_III` formats (`no_sub`, `vortex`, `subhalo`) directly reflecting the lenstronomy standardization.
+✅ **DeepLense Dataset Integration**: Designed to seamlessly ingest `Model_I` structure, with built-in extensibility for `Model_II` and `Model_III` formats (`no_sub`, `vortex`, `subhalo`) reflecting the lenstronomy standardization.
 
 ✅ **Pure Unsupervised SR Capability**: We demonstrated that by employing only a Physics-Consistency Loss ($L_{phy}$) paired with Total Variation regularization ($L_{TV}$), we can recover sharp Einstein rings *without any High-Resolution ground truth required during training*.
 
