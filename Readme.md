@@ -1,9 +1,10 @@
-# DeepLense-SR: Supervised + Physics-informed super-resolution for strong lensing images
+# DeepLense-SR: Unsupervised & Physics-informed Super-Resolution for Strong Gravitational Lensing
+  
+> 🔬 Preparing for [ML4Sci DeepLense GSoC 2026 projects](https://ml4sci.org/gsoc/projects/2026/project_DEEPLENSE.html):
+> **[DEEPLENSE9: Unsupervised Super-Resolution and Analysis of Real Lensing Images](https://ml4sci.org/gsoc/2026/proposal_DEEPLENSE9.html)** (primary)
+> and **[DEEPLENSE5: Physics Guided Machine Learning on Real Lensing Images](https://ml4sci.org/gsoc/2026/proposal_DEEPLENSE5.html)**.
 
-> 🔬 Preparing for [ML4Sci DeepLense GSoC 2026 projects](https://ml4sci.org/gsoc/projects/2026/project_DEEPLENSE.html), 
-> especially the physics-guided ML and real-lensing-image analysis projects.
-
-In particular, this repo prepares for the "Physics Guided Machine Learning on Real Lensing Images" project by prototyping physics-informed neural components (consistency losses, lens-specific metrics) on DeepLense-style data.
+This repository implements an unsupervised physics-informed super-resolution pipeline with downstream lens analysis — directly prototyping the core components for unsupervised SR on real lensing data and physics-informed substructure studies.
 
 **Physics-informed Super-resolution and Lens Analysis for Strong Gravitational Lensing**
 
@@ -21,7 +22,7 @@ This project implements a **Physics-Informed** approach:
 
 > "The goal is not just prettier images, but scientifically accurate recovery of lensing features (arcs, Einstein rings) to enable better mass modeling and substructure detection."
 
-This repository serves as a technical foundation for the **DEEPLENSE3: Physics Guided Machine Learning on Real Lensing Images** project, specifically prototyping the core physics-informed neural components required for high-fidelity lensing analysis. Short summaries of the project's recommended papers are collected in `notes/paper_summaries.md`.
+This repository serves as a technical foundation for **DEEPLENSE9: Unsupervised Super-Resolution and Analysis of Real Lensing Images** and **DEEPLENSE5: Physics Guided Machine Learning on Real Lensing Images**, specifically prototyping the core physics-informed neural components required for high-fidelity lensing analysis. Short summaries of the project's recommended papers are collected in `notes/paper_summaries.md`.
 
 
 
@@ -228,6 +229,8 @@ This pipeline was systematically extended to fully align with the official ML4Sc
 - We quantified structural improvements across 200 validations using the **Wilcoxon Signed-Rank Test**.
 
 ## 9. Next Steps for GSoC
-- **(Planned) Physics-Informed Preprocessing**: Implement the LensPINN-style physics preprocessing term $\tanh(\nabla_x \, \nabla_y(\log(I_{\max}/I))^2)$ as an additional input channel, following Paper 3.
-- **(Planned) Real Data**: Extend pipeline to real HST-like lensing images as described in Paper 3 and Paper 4.
-- **(Planned) Unsupervised Substructure Detection**: Extend Paper 1's approach (unsupervised anomaly detection) to SR-preprocessed images, studying whether SR improves detection sensitivity.
+- **(DEEPLENSE9)** Bridge unsupervised SR from simulated to real galaxy-source lensing images (HST/HSC/Euclid), developing domain adaptation strategies.
+- **(DEEPLENSE9)** Integrate lens analysis modules (substructure classification, mass estimation) with SR-enhanced real images.
+- **(Planned) Physics-Informed Preprocessing**: Implement the LensPINN-style physics preprocessing term...
+- **(Planned) Real Data**: Extend pipeline to real HST-like lensing images...
+- **(Planned) Unsupervised Substructure Detection**: Extend Paper 1's approach...
