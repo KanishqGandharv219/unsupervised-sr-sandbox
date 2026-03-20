@@ -45,7 +45,7 @@ pip install -r requirements.txt
 ## Experiments
 
 ### 1. Baseline Supervised SR
-Trains a simple CNN on synthetic lensing pairs.
+Trains a simple CNN on synthetic lensing pairs
 ```bash
 python run_baseline.py --epochs 10
 ```
