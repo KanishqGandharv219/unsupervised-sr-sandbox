@@ -167,9 +167,9 @@ We computed a robust paired *Wilcoxon Signed-Rank Test* between Bicubic interpol
 
 **Scientific Implication:** 
 Enhancing arc sharpness directly correlates to significantly lower uncertainty bounds during:
-- Subhalo defect / clump detection
-- Einstein radius $\theta_E$ parametric measurements
-- Dark matter mass profile inversion (lenstronomy)
+- Subhalo defect / clump detection.
+- Einstein radius $\theta_E$ parametric measurements.
+- Dark matter mass profile inversion (lenstronomy).
 
 ## 5. Downstream: Dark Matter Substructure Classification
 
