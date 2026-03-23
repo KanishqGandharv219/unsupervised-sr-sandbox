@@ -128,8 +128,8 @@ We have established a baseline on synthetic lensing data (Arcs + Gaussian source
 **Motivation:** Ground-based and space-based astronomical surveys (LSST, Euclid) rarely have perfectly matched high-resolution ground truths for active lensing events. We demonstrate that **Physics-Informed Consistency Loss** alone can train functional SR models.
 
 **Method:** 
-- Trained entirely in unsupervised mode combining physical loss ($L_{phy} = \|\mathcal{P}(\text{SR}) - \text{LR}\|^2$) and Total Variation regularization ($\lambda_{TV} = 0.0001$).
-- **No access** to High-Resolution labels during training.
+- Trained entirely in unsupervised mode combining physical loss ($L_{phy} = \|\mathcal{P}(\text{SR}) - \text{LR}\|^2$) and Total Variation regularization ($\lambda_{TV} = 0.0001$)
+- **No access** to High-Resolution labels during training
 
 **Results (DeepLense-style Synthetic):**
 
