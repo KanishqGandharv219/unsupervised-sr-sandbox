@@ -174,8 +174,8 @@ Enhancing arc sharpness directly correlates to significantly lower uncertainty b
 ## 5. Downstream: Dark Matter Substructure Classification
 
 Motivated by Paper 2 (Alexander et al., 2020) and Paper 3 (LensPINN, NeurIPS 2024), SR-enhanced images from this pipeline are intended to feed a downstream classifier distinguishing:
-- `no_sub`: No dark matter substructure
-- `vortex`: Axion dark matter (vortex substructure)
+- `no_sub`: No dark matter substructure.
+- `vortex`: Axion dark matter (vortex substructure).
 - `subhalo`: CDM subhalo substructure.
 
 **Results**: We trained a ResNet18-based multi-class classifier on $3000$ stratified mock samples (compatible with DeepLense Model I) to distinguish `no_sub`, `vortex`, and `subhalo` substructures over 30 epochs under two physical configurations.
